@@ -1,8 +1,9 @@
 import Image from "next/image";
-import { BookData } from "./List";
+
 import { useSetRecoilState } from "recoil";
-import { BookDetailState } from "@/store/BookDetailState";
-import style from "../page.module.css";
+import { BookDetailState } from "store/BookDetailState";
+import style from "style/list.module.css";
+import { ListBookData } from "type/book.types";
 
 export default function BookData({
   title,
@@ -10,7 +11,7 @@ export default function BookData({
   image,
   url,
   isbn13,
-}: BookData) {
+}: ListBookData) {
   const setCurrentBook = useSetRecoilState(BookDetailState);
 
   const onClickLsit = () => {

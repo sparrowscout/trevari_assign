@@ -1,0 +1,29 @@
+.detailContainer {
+  position: fixed;
+  max-height: 300px;
+  z-index: 10;
+  overflow: scroll;
+  background-color: #fff;
+  width: 100%;
+  padding: 20px;
+}
+
+.nullContainer {
+  margin-top: 10px;
+  color: #9f9f9f;
+}
+
+.bookContainer {
+  display: flex;
+}
+
+.bookCover {
+  aspect-ratio: 6/7;
+  height: 220px;
+  position: relative;
+}
+
+.bookDesc {
+  max-height: 100px;
+  overflow-y: scroll;
+}

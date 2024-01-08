@@ -1,19 +1,9 @@
-import { useRecoilState, useRecoilValue } from "recoil";
-import { BookData } from "./List";
-import { BookDetailState } from "@/store/BookDetailState";
+import { useRecoilValue } from "recoil";
+import { BookDetailState } from "store/BookDetailState";
 import { useEffect, useState } from "react";
-import style from "../page.module.css";
+import style from "style/detail.module.css";
 import Image from "next/image";
-
-export interface BookDetail extends BookData {
-  authors: string;
-  publisher: string;
-  pages: string;
-  rating: string;
-  desc: string;
-  price: string;
-  image: string;
-}
+import { BookDetail } from "type/book.types";
 
 export default function Detail() {
   const currentBook = useRecoilValue(BookDetailState);

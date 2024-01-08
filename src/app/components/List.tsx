@@ -3,35 +3,9 @@
 import { KeyboardEvent, useEffect, useRef, useState } from "react";
 import { useInput } from "../hook/useInput";
 import BookData from "./BookData";
-import style from "../page.module.css";
-
-type OperatorType = keyof typeof OperatorEnum;
-
-export interface BookData {
-  title: string;
-  subtitle: string;
-  image: string;
-  url: string;
-  isbn13: string;
-}
-
-export interface BookList {
-  books?: BookData[];
-  page?: string;
-  total?: string;
-}
-
-export enum OperatorEnum {
-  "OR" = "|",
-  "NOT" = "-",
-  "SINGLE" = "SINGLE",
-}
-
-interface SearchData {
-  keywordArr: string[];
-  operator: OperatorEnum;
-  pageNumber: number;
-}
+import { ListBookData, SearchData } from "type/book.types";
+import { OperatorEnum } from "constants/operatorEnum";
+import style from "style/list.module.css";
 
 export default function List() {
   const { value, onChange } = useInput("");
@@ -40,7 +14,7 @@ export default function List() {
     operator: OperatorEnum.SINGLE,
     pageNumber: 1,
   });
-  const [bookList, setBookList] = useState<BookData[]>();
+  const [bookList, setBookList] = useState<ListBookData[]>();
   const resultRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -106,14 +80,17 @@ export default function List() {
     }
   };
 
-  const settingORList = (result: BookData[], secondResult: BookData[]) => {
+  const settingORList = (
+    result: ListBookData[],
+    secondResult: ListBookData[]
+  ) => {
     const list = result
       .concat(secondResult)
       .sort((a, b) => parseInt(a.isbn13) - parseInt(b.isbn13));
     return list;
   };
 
-  const settingNOTList = (result: BookData[], anotherKeyword: string) => {
+  const settingNOTList = (result: ListBookData[], anotherKeyword: string) => {
     const list = result
       .filter(
         (book) =>
