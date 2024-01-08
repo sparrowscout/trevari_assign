@@ -3,6 +3,7 @@
 ## 프로젝트 환경설정
 
 - `Next.js`, `TypeScript` 사용
+- node version `18.17.0` 사용
 - github issues를 사용하여 이슈 관리
 - 전역상태 관리 도구로 `recoil` 사용
 - 라이브러리 사용 여부 언급이 없어서 `Next.js`에서 지원하지 않는 전역상태 도구만 추가적으로 사용하고, 스타일링이나 서버 상태 관리 라이브러리는 따로 사용하지 않고 구현했습니다.
@@ -37,7 +38,13 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, run the development server:
+1. 설치
+
+```bash
+npm install
+```
+
+2. 실행
 
 ```bash
 npm run dev
