@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { useInput } from "../hook/useInput";
 import BookData from "./BookData";
 import style from "../page.module.css";
@@ -16,9 +16,9 @@ export interface BookData {
 }
 
 export interface BookList {
-  books: BookData[];
-  page: string;
-  total: string;
+  books?: BookData[];
+  page?: string;
+  total?: string;
 }
 
 export enum OperatorEnum {
@@ -27,13 +27,25 @@ export enum OperatorEnum {
   "SINGLE" = "SINGLE",
 }
 
+interface SearchData {
+  keywordArr: string[];
+  operator: OperatorEnum;
+  pageNumber: number;
+}
+
 export default function List() {
   const { value, onChange } = useInput("");
+  const [searchData, setSearchData] = useState<SearchData>({
+    keywordArr: [""],
+    operator: OperatorEnum.SINGLE,
+    pageNumber: 1,
+  });
   const [bookList, setBookList] = useState<BookData[]>();
+  const resultRef = useRef<HTMLDivElement>(null);
 
-  const getBookLists = async (keyword: string, pageNumber: number = 1) => {
+  const getBookLists = async (keyword: string) => {
     const response = await fetch(
-      `https://api.itbook.store/1.0/search/${keyword}/${pageNumber}`
+      `https://api.itbook.store/1.0/search/${keyword}/${searchData.pageNumber}`
     );
     return response.json();
   };
@@ -47,21 +59,47 @@ export default function List() {
     return OperatorEnum.SINGLE;
   };
 
-  const settingKeywords = async () => {
-    const keyword = value;
-    const operator = checkOperator(keyword);
-    const keywordArr = keyword.split(`${operator}`).slice(0, 2);
+  const onClickSearchBtn = () => {
+    setBookList([]);
+    const operator = checkOperator(value);
+    const keywordArr = value.split(`${operator}`).slice(0, 2);
+    setSearchData((prev) => {
+      return { ...prev, keywordArr, operator };
+    });
+  };
 
-    if (operator === OperatorEnum.SINGLE) {
-      const list = await getBookLists(keyword);
-      return setBookList(list.books);
-    } else if (operator === OperatorEnum.NOT) {
-      const list = await getBookLists(keywordArr[0]);
-      settingNOTList(list.books, keywordArr[1]);
+  const onScrollResultRef = (event: React.UIEvent<HTMLElement>) => {
+    const target = event.target as HTMLDivElement;
+
+    if (target.clientHeight + target.scrollTop >= target.scrollHeight) {
+      setSearchData((prev) => {
+        return { ...prev, pageNumber: searchData.pageNumber + 1 };
+      });
+    }
+  };
+
+  useEffect(() => {
+    settingBookList();
+  }, [searchData]);
+
+  const settingBookList = async () => {
+    if (searchData.operator === OperatorEnum.SINGLE) {
+      const list = await getBookLists(searchData.keywordArr[0]);
+      const newList = bookList ? bookList.concat(list.books) : list.books;
+      return setBookList(newList);
+    } else if (searchData.operator === OperatorEnum.NOT) {
+      const list = await getBookLists(searchData.keywordArr[0]);
+      const newList = bookList
+        ? bookList.concat(settingNOTList(list.books, searchData.keywordArr[1]))
+        : settingNOTList(list.books, searchData.keywordArr[1]);
+      return setBookList(newList);
     } else {
-      const firstResult = await getBookLists(keywordArr[0]);
-      const secondResult = await getBookLists(keywordArr[1]);
-      settingORList(firstResult.books, secondResult.books);
+      const firstResult = await getBookLists(searchData.keywordArr[0]);
+      const secondResult = await getBookLists(searchData.keywordArr[1]);
+      const newList = bookList
+        ? bookList.concat(settingORList(firstResult.books, secondResult.books))
+        : settingORList(firstResult.books, secondResult.books);
+      return setBookList(newList);
     }
   };
 
@@ -69,7 +107,7 @@ export default function List() {
     const list = result
       .concat(secondResult)
       .sort((a, b) => parseInt(a.isbn13) - parseInt(b.isbn13));
-    setBookList(list);
+    return list;
   };
 
   const settingNOTList = (result: BookData[], anotherKeyword: string) => {
@@ -79,8 +117,7 @@ export default function List() {
           !book.title.toLowerCase().includes(anotherKeyword.toLowerCase())
       )
       .sort((a, b) => parseInt(a.isbn13) - parseInt(b.isbn13));
-    console.log(list);
-    setBookList(list);
+    return list;
   };
 
   return (
@@ -89,14 +126,18 @@ export default function List() {
         <h2>List</h2>
         <div className={style.searchContainer}>
           <input className={style.searchInput} onChange={onChange} />
-          <button className={style.searchBtn} onClick={settingKeywords}>
+          <button className={style.searchBtn} onClick={onClickSearchBtn}>
             검색
           </button>
         </div>
       </div>
 
       {bookList ? (
-        <div className={style.listResult}>
+        <div
+          className={style.listResult}
+          ref={resultRef}
+          onScroll={(event) => onScrollResultRef(event)}
+        >
           {bookList.map((book) => {
             return (
               <BookData

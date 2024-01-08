@@ -53,6 +53,7 @@
 }
 
 .singleList {
+  cursor: pointer;
   display: flex;
 }
 
