@@ -16,14 +16,25 @@ export default function BookData({
   const onClickLsit = () => {
     setCurrentBook(Number(isbn13));
   };
+
   return (
-    <div className={style.singleList} onClick={onClickLsit}>
-      <div className={style.listBookCover}>
-        <Image src={`${image}`} alt={`${title}'s cover image`} fill />
+    <div className={style.singleList}>
+      <div className={style.listBookCover} onClick={onClickLsit}>
+        <Image
+          src={`${image}`}
+          alt={`${title}'s cover image`}
+          fill
+          sizes="100px"
+        />
       </div>
       <div>
-        <h4 className="title">{title}</h4>
-        <div className="subtitle">{subtitle}</div>
+        <h4 className={style.title} onClick={onClickLsit}>
+          {title}
+        </h4>
+        <div className={style.subtitle}>{subtitle}</div>
+        <a href={url}>
+          <span className={style.bookLink}>링크 바로가기↗︎</span>
+        </a>
       </div>
     </div>
   );
