@@ -7,8 +7,8 @@
 }
 
 .listHeader {
+  padding-top: 300px;
   width: 100%;
-  background-color: #fff;
   padding-bottom: 20px;
 }
 
@@ -47,20 +47,29 @@
 }
 
 .listBookCover {
+  cursor: pointer;
   aspect-ratio: 6/7;
   height: 100px;
   position: relative;
 }
 
 .singleList {
-  cursor: pointer;
   display: flex;
 }
 
 .detailContainer {
+  position: fixed;
+  max-height: 300px;
+  z-index: 10;
+  overflow: scroll;
   background-color: #fff;
   width: 100%;
   padding: 20px;
+}
+
+.nullContainer {
+  margin-top: 10px;
+  color: #9f9f9f;
 }
 
 .bookContainer {
@@ -76,4 +85,18 @@
 .bookDesc {
   max-height: 100px;
   overflow-y: scroll;
+}
+
+.title {
+  cursor: pointer;
+}
+
+.subtitle {
+  margin-bottom: 6px;
+}
+
+.bookLink {
+  cursor: pointer;
+  font-size: 0.7rem;
+  color: #3498db;
 }
