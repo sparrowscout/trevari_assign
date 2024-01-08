@@ -48,6 +48,7 @@ export default function Detail() {
               src={`${bookDetail.image}`}
               alt={`${bookDetail.title}'s cover image`}
               fill
+              sizes="220px"
             />
           </div>
           <div>
@@ -64,7 +65,11 @@ export default function Detail() {
             <div className={style.bookDesc}>소개 {bookDetail.desc}</div>
           </div>
         </div>
-      ) : null}
+      ) : (
+        <div className={style.nullContainer}>
+          책의 표지이미지 혹은 제목을 클릭하시면 설명이 나옵니다
+        </div>
+      )}
     </div>
   );
 }
