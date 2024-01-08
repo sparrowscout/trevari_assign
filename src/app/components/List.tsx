@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useRef, useState } from "react";
+import { KeyboardEvent, useEffect, useRef, useState } from "react";
 import { useInput } from "../hook/useInput";
 import BookData from "./BookData";
 import style from "../page.module.css";
@@ -43,6 +43,10 @@ export default function List() {
   const [bookList, setBookList] = useState<BookData[]>();
   const resultRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    settingBookList();
+  }, [searchData]);
+
   const getBookLists = async (keyword: string) => {
     const response = await fetch(
       `https://api.itbook.store/1.0/search/${keyword}/${searchData.pageNumber}`
@@ -59,28 +63,27 @@ export default function List() {
     return OperatorEnum.SINGLE;
   };
 
-  const onClickSearchBtn = () => {
+  const onEnterSubmit = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      onSubmit();
+    }
+  };
+
+  const onSubmit = () => {
     setBookList([]);
     const operator = checkOperator(value);
     const keywordArr = value.split(`${operator}`).slice(0, 2);
-    setSearchData((prev) => {
-      return { ...prev, keywordArr, operator };
-    });
+    setSearchData({ pageNumber: 1, keywordArr, operator });
   };
 
   const onScrollResultRef = (event: React.UIEvent<HTMLElement>) => {
     const target = event.target as HTMLDivElement;
-
     if (target.clientHeight + target.scrollTop >= target.scrollHeight) {
       setSearchData((prev) => {
         return { ...prev, pageNumber: searchData.pageNumber + 1 };
       });
     }
   };
-
-  useEffect(() => {
-    settingBookList();
-  }, [searchData]);
 
   const settingBookList = async () => {
     if (searchData.operator === OperatorEnum.SINGLE) {
@@ -125,14 +128,18 @@ export default function List() {
       <div className={style.listHeader}>
         <h2>List</h2>
         <div className={style.searchContainer}>
-          <input className={style.searchInput} onChange={onChange} />
-          <button className={style.searchBtn} onClick={onClickSearchBtn}>
+          <input
+            className={style.searchInput}
+            onChange={onChange}
+            onKeyDown={(event) => onEnterSubmit(event)}
+          />
+          <button className={style.searchBtn} onClick={onSubmit}>
             검색
           </button>
         </div>
       </div>
 
-      {bookList ? (
+      {bookList && bookList.length > 0 ? (
         <div
           className={style.listResult}
           ref={resultRef}
@@ -151,7 +158,11 @@ export default function List() {
             );
           })}
         </div>
-      ) : null}
+      ) : (
+        <div className={style.nullContainer}>
+          검색어에 따라 서적 리스트가 나옵니다.
+        </div>
+      )}
     </div>
   );
 }
